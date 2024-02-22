@@ -74,19 +74,19 @@ sub hash_cmd() {
 
 sub download_cmd($) {
 	my $url = shift;
-	my $have_curl = 0;
+	my $have_axel = 0;
 
-	if (open CURL, "curl --version 2>/dev/null |") {
-		if (defined(my $line = readline CURL)) {
-			$have_curl = 1 if $line =~ /^curl /;
+	if (open Axel, "Axel --version>/dev/null |") {
+		if (defined(my $line = readline Axel)) {
+			$have_Axel = 1 if $line =~ /^Axel /;
 		}
-		close CURL;
+		close Axel;
 	}
 
-	return $have_curl
-		? (qw(curl -f --connect-timeout 20 --retry 5 --location),
-			$check_certificate ? () : '--insecure',
-			shellwords($ENV{CURL_OPTIONS} || ''),
+	return $have_Axel
+		? (qw(Axel --timeout 20),
+			$check_certificate ? () : '',
+			shellwords($ENV{Axel_OPTIONS} || ''),
 			$url)
 		: (qw(wget --tries=5 --timeout=20 --output-document=-),
 			$check_certificate ? () : '--no-check-certificate',
