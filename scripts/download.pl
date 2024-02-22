@@ -25,7 +25,7 @@ my @mirrors;
 my $ok;
 
 my $check_certificate = $ENV{DOWNLOAD_CHECK_CERTIFICATE} eq "y";
-my $custom_tool = $ENV{DOWNLOAD_TOOL_CUSTOM};
+my $custom_tool = aria2c;
 my $download_tool;
 
 $url_filename or $url_filename = $filename;
@@ -105,16 +105,21 @@ sub select_tool {
 sub download_cmd {
 	my $url = shift;
 	my $filename = shift;
-        if  ($download_tool eq "aria2c") {
-	    my $additional_mirrors = join(" ", map "$_/$filename", @_);
-	    my @chArray = ('a'..'z', 'A'..'Z', 0..9);
-	    my $rfn = join '', "${filename}_", map{ $chArray[int rand @chArray] } 0..9;
-	else ($download_tool eq "curl") {
+
+	if ($download_tool eq "curl") {
 		return (qw(curl -f --connect-timeout 20 --retry 5 --location),
 			$check_certificate ? () : '--insecure',
 			shellwords($ENV{CURL_OPTIONS} || ''),
 			$url);
-	} 
+	} elsif ($download_tool eq "wget") {
+		return (qw(wget --tries=5 --timeout=20 --output-document=-),
+			$check_certificate ? () : '--no-check-certificate',
+			shellwords($ENV{WGET_OPTIONS} || ''),
+			$url);
+	} elsif ($download_tool eq "aria2c") {
+		my $additional_mirrors = join(" ", map "$_/$filename", @_);
+		my @chArray = ('a'..'z', 'A'..'Z', 0..9);
+		my $rfn = join '', "${filename}_", map{ $chArray[int rand @chArray] } 0..9;
 
 		@mirrors=();
 
