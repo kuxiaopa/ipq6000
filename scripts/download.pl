@@ -25,7 +25,7 @@ my @mirrors;
 my $ok;
 
 my $check_certificate = $ENV{DOWNLOAD_CHECK_CERTIFICATE} eq "y";
-my $custom_tool = aria2c;
+my $custom_tool = $ENV{DOWNLOAD_TOOL_CUSTOM};
 my $download_tool;
 
 $url_filename or $url_filename = $filename;
